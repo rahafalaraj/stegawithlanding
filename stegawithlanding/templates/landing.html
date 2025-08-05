@@ -142,20 +142,7 @@
             font-size: 0.9rem;
         }
 
-        /* Keyboard shortcuts help */
-        .shortcuts-help {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(25, 35, 60, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(0, 255, 135, 0.3);
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
-        }
+        
 
         .shortcuts-help.show {
             opacity: 1;
@@ -551,9 +538,7 @@
         <select class="language-select" onchange="changeLanguage(this.value)">
             <option value="en">🇺🇸 English</option>
             <option value="ar">AR العربية</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="de">🇩🇪 Deutsch</option>
+            
         </select>
     </div>
 
@@ -575,30 +560,8 @@
         </div>
     </div>
 
-    <!-- Keyboard Shortcuts Help -->
-    <div class="shortcuts-help" id="shortcutsHelp">
-        <h5 style="color: #00ff87; margin-bottom: 10px;" data-translate="shortcuts-title">Keyboard Shortcuts</h5>
-        <div class="shortcut-item">
-            <span data-translate="home-nav">Home</span>
-            <span class="key-combo">Ctrl + H</span>
-        </div>
-        <div class="shortcut-item">
-            <span data-translate="tools-nav">Tools</span>
-            <span class="key-combo">Ctrl + T</span>
-        </div>
-        <div class="shortcut-item">
-            <span data-translate="clear-nav">Clear Page</span>
-            <span class="key-combo">Ctrl + R</span>
-        </div>
-        <div class="shortcut-item">
-            <span data-translate="help-nav">Toggle Help</span>
-            <span class="key-combo">F1</span>
-        </div>
-        <div class="shortcut-item">
-            <span data-translate="messages-nav">Messages</span>
-            <span class="key-combo">Ctrl + M</span>
-        </div>
-    </div>
+   
+    
 
     <!-- Clear Button -->
     <button class="clear-button" onclick="clearPage()" data-translate="clear-btn">
@@ -779,22 +742,22 @@
                 'theme-default': '🌟 Default',
                 'theme-dark': '🌙 Dark',
                 'theme-cyber': '💜 Cyber',
-                'logo': '🔐 StegoSuite',
+                'logo': '🔐 Pixel-cryp',
                 'nav-home': 'Home',
                 'nav-about': 'About',
                 'nav-techniques': 'Techniques',
                 'nav-team': 'Team',
                 'nav-rules': 'Rules',
                 'nav-tools': '🚀 Try Tools',
-                'hero-title': '🔐 Advanced Steganography Suite',
+                'hero-title': '🔐 Pixel-cryp(Hiding Digital Media in images)',
                 'hero-desc': 'Hide secret messages and images within ordinary images using cutting-edge cryptographic techniques. Explore the invisible world of digital steganography.',
                 'hero-cta': '🚀 Start Hiding Messages',
                 'messages-title': 'System Messages',
                 'welcome-msg': 'Welcome!',
-                'welcome-desc': 'Use keyboard shortcuts for quick navigation',
+                
                 'tip-msg': 'Pro Tip:',
                 'tip-desc': 'Try different themes for better experience',
-                'shortcuts-title': 'Keyboard Shortcuts',
+                
                 'home-nav': 'Home',
                 'tools-nav': 'Tools',
                 'clear-nav': 'Clear Page',
@@ -814,15 +777,13 @@
                 'nav-team': 'الفريق',
                 'nav-rules': 'القوانين',
                 'nav-tools': '🚀 جرب الأدوات',
-                'hero-title': '🔐 مجموعة الإخفاء المتقدمة',
+                'hero-title': '🔐 بيكسل-كريب(اخفاء الوسائط الرقمية داخل الصور )',
                 'hero-desc': 'أخفِ الرسائل السرية والصور داخل الصور العادية باستخدام تقنيات التشفير المتطورة. استكشف العالم غير المرئي للإخفاء الرقمي.',
                 'hero-cta': '🚀 ابدأ إخفاء الرسائل',
                 'messages-title': 'رسائل النظام',
                 'welcome-msg': 'مرحباً!',
-                'welcome-desc': 'استخدم اختصارات لوحة المفاتيح للتنقل السريع',
                 'tip-msg': 'نصيحة:',
                 'tip-desc': 'جرب الثيمات المختلفة لتجربة أفضل',
-                'shortcuts-title': 'اختصارات لوحة المفاتيح',
                 'home-nav': 'الرئيسية',
                 'tools-nav': 'الأدوات',
                 'clear-nav': 'مسح الصفحة',
@@ -967,7 +928,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            addMessage('Welcome to Advanced Steganography Suite!', 'welcome');
+            addMessage('Welcome to pixel-cryp', 'welcome');
             addMessage('Press F1 to see keyboard shortcuts', 'tip');
             
             // Auto-show shortcuts help briefly
