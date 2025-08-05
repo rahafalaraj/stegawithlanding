@@ -895,10 +895,8 @@
         <div class="lang-selector">
           <select id="languageSelector">
             <option value="en">🇺🇸 English</option>
-            <option value="ar">🇸🇦 العربية</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="de">🇩🇪 Deutsch</option>
+            <option value="ar">AR العربية</option>
+          
           </select>
         </div>
         <button class="clear-btn" id="clearBtn" onclick="clearAll()">🧹 Clear</button>
@@ -1173,7 +1171,7 @@
         watermark: "🎓 Graduation Project 2025 • All Rights Reserved<br>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour"
       },
       ar: {
-        title: "🔐 مجموعة التشفير المتقدمة",
+        title: "🔐 بيكسل-كريب(اخفاء الوسائط الرقمية داخل الصور)",
         subtitle: "إخفاء الرسائل داخل الصور باستخدام خوارزميات التشفير المتطورة. اكتشف العالم غير المرئي للتشفير الرقمي.",
         "tab-hide": "🚀 إخفاء رسالة",
         "tab-extract": "🔍 استخراج رسالة",
@@ -1395,17 +1393,7 @@
       'KeyL': () => cycleLanguage()
     };
 
-    function showShortcutHelp() {
-      const helpText = `
-        Keyboard Shortcuts:
-        H - Show this help
-        C - Clear all fields
-        1-6 - Switch between tabs
-        T - Cycle themes
-        L - Cycle languages
-      `;
-      showNotification(helpText, 'info', 8000);
-    }
+ 
 
     function cycleTheme() {
       const themes = ['dark-mode', 'light-mode', 'blue-mode', 'purple-mode', 'green-mode'];
@@ -1976,7 +1964,7 @@
         if (prog) prog.style.display = 'none';
       });
 
-      showNotification('🔐 Advanced Steganography Suite loaded successfully!', 'success');
+      showNotification('🔐 Pixel-cryp loaded successfully!', 'success');
     });
 
     // Smooth scrolling for better UX
