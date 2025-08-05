@@ -1,0 +1,1997 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Steganography 🔐✨</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
+
+  :root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --warning-gradient: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+    --dark-bg: #0a0a0a;
+    --card-bg: rgba(15, 23, 42, 0.95);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --text-primary: #e8f4fd;
+    --text-secondary: #94a3b8;
+    --border-color: rgba(100, 116, 139, 0.2);
+    --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Theme variants */
+  body.dark-mode {
+    --theme-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+  }
+
+  body.light-mode {
+    --theme-bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #cbd5e1 50%, #94a3b8 75%, #64748b 100%);
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --border-color: rgba(203, 213, 225, 0.5);
+  }
+
+  body.blue-mode {
+    --theme-bg: linear-gradient(135deg, #0c1445 0%, #1e3a8a 25%, #3b82f6 50%, #60a5fa 75%, #93c5fd 100%);
+  }
+
+  body.purple-mode {
+    --theme-bg: linear-gradient(135deg, #581c87 0%, #7c3aed 25%, #8b5cf6 50%, #a78bfa 75%, #c4b5fd 100%);
+  }
+
+  body.green-mode {
+    --theme-bg: linear-gradient(135deg, #064e3b 0%, #059669 25%, #10b981 50%, #34d399 75%, #6ee7b7 100%);
+  }
+
+  body {
+    margin: 0;
+    background: 
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23667eea;stop-opacity:0.1"/><stop offset="100%" style="stop-color:%23764ba2;stop-opacity:0.05"/></linearGradient></defs><rect width="1200" height="800" fill="url(%23bg)"/><g fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"><path d="M200,100 Q400,200 600,100 T1000,100"/><path d="M100,300 Q300,400 500,300 T900,300"/><path d="M300,500 Q500,600 700,500 T1100,500"/></g><circle cx="200" cy="150" r="50" fill="rgba(79,172,254,0.1)"/><circle cx="800" cy="250" r="80" fill="rgba(103,126,234,0.08)"/><circle cx="400" cy="600" r="60" fill="rgba(245,87,108,0.06)"/></svg>') center/cover,
+      radial-gradient(circle at 20% 80%, rgba(103, 126, 234, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(245, 87, 108, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(79, 172, 254, 0.1) 0%, transparent 50%),
+      var(--theme-bg, linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%));
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    position: relative;
+    overflow-x: hidden;
+    transition: all 0.5s ease;
+  }
+
+  /* Enhanced animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: 
+      conic-gradient(from 0deg at 30% 70%, transparent 0deg, rgba(103, 126, 234, 0.03) 90deg, transparent 180deg),
+      conic-gradient(from 180deg at 70% 30%, transparent 0deg, rgba(245, 87, 108, 0.03) 90deg, transparent 180deg);
+    animation: cosmicRotation 60s linear infinite;
+    z-index: -2;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: 
+      radial-gradient(circle at 25% 25%, rgba(79, 172, 254, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(103, 126, 234, 0.05) 0%, transparent 50%);
+    animation: breathe 8s ease-in-out infinite alternate;
+    z-index: -1;
+  }
+
+  @keyframes cosmicRotation {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+  }
+
+  @keyframes breathe {
+    0% { opacity: 0.3; transform: scale(1); }
+    100% { opacity: 0.6; transform: scale(1.05); }
+  }
+
+  /* Floating particles */
+  .particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--accent-gradient);
+    border-radius: 50%;
+    animation: floatParticle 15s ease-in-out infinite;
+    opacity: 0.6;
+  }
+
+  .particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+  .particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 2s; }
+  .particle:nth-child(3) { top: 80%; left: 20%; animation-delay: 4s; }
+  .particle:nth-child(4) { top: 30%; left: 70%; animation-delay: 6s; }
+  .particle:nth-child(5) { top: 70%; left: 50%; animation-delay: 8s; }
+
+  @keyframes floatParticle {
+    0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
+    25% { transform: translateY(-20px) rotate(90deg); opacity: 0.8; }
+    50% { transform: translateY(-10px) rotate(180deg); opacity: 0.6; }
+    75% { transform: translateY(-30px) rotate(270deg); opacity: 0.9; }
+  }
+
+  /* Enhanced navigation */
+  nav {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    padding: 1rem 2rem;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-logo {
+    color: transparent;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    font-weight: 700;
+    font-size: 1.3rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .nav-logo:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+
+  .nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  /* Theme selector */
+  .theme-selector {
+    position: relative;
+    display: inline-block;
+  }
+
+  .theme-dropdown {
+    background: var(--accent-gradient);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .theme-dropdown:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Language selector */
+  .lang-selector select {
+    background: var(--success-gradient);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Clear button */
+  .clear-btn {
+    background: var(--warning-gradient);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .clear-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Enhanced header */
+  .header {
+    margin-top: 100px;
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  h1 {
+    font-weight: 700;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    margin-bottom: 1rem;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    letter-spacing: -0.02em;
+  }
+
+  h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--accent-gradient);
+    border-radius: 2px;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes glow {
+    0% { box-shadow: 0 0 5px rgba(79, 172, 254, 0.5); }
+    100% { box-shadow: 0 0 20px rgba(79, 172, 254, 0.8), 0 0 30px rgba(79, 172, 254, 0.6); }
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-weight: 400;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+  }
+
+  /* Enhanced tab container */
+  .tab-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    background: var(--card-bg);
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border-color);
+  }
+
+  .tab-button {
+    padding: 18px 20px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary-gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .tab-button:hover::before {
+    opacity: 0.1;
+  }
+
+  .tab-button.active {
+    background: var(--glass-bg);
+    color: var(--text-primary);
+    border-bottom-color: #4facfe;
+    transform: translateY(-2px);
+  }
+
+  .tab-button.active::before {
+    opacity: 0.15;
+  }
+
+  /* Enhanced tab content */
+  .tab-content {
+    display: none;
+    background: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 0 0 20px 20px;
+    box-shadow: var(--shadow-xl);
+    backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border-color);
+    border-top: none;
+    position: relative;
+  }
+
+  .tab-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--accent-gradient);
+  }
+
+  .tab-content.active {
+    display: block;
+    animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Enhanced form elements */
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+  }
+
+  input[type="file"],
+  input[type="text"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.7);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+  }
+
+  input[type="file"]:focus,
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+    border-color: #4facfe;
+    background: rgba(15, 23, 42, 0.9);
+    box-shadow: 
+      0 0 0 3px rgba(79, 172, 254, 0.1),
+      var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  input[type="file"]:hover,
+  input[type="text"]:hover,
+  textarea:hover,
+  select:hover {
+    border-color: rgba(79, 172, 254, 0.5);
+    background: rgba(15, 23, 42, 0.8);
+  }
+
+  /* Enhanced drag and drop */
+  .drag-area {
+    border: 2px dashed var(--border-color);
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.3);
+    margin-bottom: 20px;
+  }
+
+  .drag-area.drag-over {
+    border-color: #4facfe;
+    background: rgba(79, 172, 254, 0.1);
+    transform: scale(1.02);
+  }
+
+  .drag-area .drag-text {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .drag-area .drag-or {
+    color: var(--text-secondary);
+    margin: 10px 0;
+  }
+
+  /* File input hidden */
+  input[type="file"].hidden-file-input {
+    display: none;
+  }
+
+  /* Enhanced textarea */
+  textarea {
+    min-height: 120px;
+    font-family: 'JetBrains Mono', monospace;
+    resize: vertical;
+    line-height: 1.6;
+  }
+
+  /* Enhanced buttons */
+  button {
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-lg);
+  }
+
+  button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+  }
+
+  button:hover::before {
+    left: 100%;
+  }
+
+  button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  button:active {
+    transform: translateY(-1px);
+  }
+
+  button:disabled {
+    background: rgba(100, 116, 139, 0.5) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Special button variants */
+  .btn-success {
+    background: var(--success-gradient);
+  }
+
+  .btn-warning {
+    background: var(--warning-gradient);
+  }
+
+  .btn-secondary {
+    background: var(--secondary-gradient);
+  }
+
+  /* Enhanced info displays */
+  .info {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 15px;
+    padding: 12px 16px;
+    background: rgba(79, 172, 254, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid #4facfe;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Notification system */
+  .notification-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 400px;
+  }
+
+  .notification {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    animation: slideInRight 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent-gradient);
+  }
+
+  .notification.success::before {
+    background: var(--success-gradient);
+  }
+
+  .notification.error::before {
+    background: var(--warning-gradient);
+  }
+
+  .notification.warning::before {
+    background: linear-gradient(135deg, #ffc107, #ff9800);
+  }
+
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(100%); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Keyboard shortcut hints */
+  .shortcut-hint {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+
+  .shortcut-hint.show {
+    opacity: 1;
+  }
+
+  /* Enhanced message displays */
+  .extracted-message {
+    max-width: 800px;
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 16px;
+    color: var(--text-primary);
+    box-shadow: var(--shadow-xl);
+    font-family: 'JetBrains Mono', monospace;
+    white-space: pre-wrap;
+    margin: 2rem auto;
+    position: relative;
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    word-break: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .extracted-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent-gradient);
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* Enhanced feedback messages */
+  .message-feedback {
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    font-weight: 600;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .success {
+    background: rgba(17, 153, 142, 0.2);
+    color: #38ef7d;
+    border-color: #38ef7d;
+  }
+
+  .error {
+    background: rgba(252, 70, 107, 0.2);
+    color: #fc466b;
+    border-color: #fc466b;
+  }
+
+  /* Enhanced progress indicators */
+  .progress-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    color: #4facfe;
+    font-weight: 600;
+    padding: 16px;
+    background: rgba(79, 172, 254, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+  }
+
+  .spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(79, 172, 254, 0.3);
+    border-top: 3px solid #4facfe;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 12px;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Enhanced password strength meter */
+  .password-strength-meter {
+    margin-top: 12px;
+    margin-bottom: 20px;
+  }
+
+  .password-strength-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(100, 116, 139, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .password-strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+  }
+
+  .password-strength-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .password-feedback {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Enhanced content warning */
+  .content-warning {
+    display: none;
+    background: rgba(252, 70, 107, 0.2);
+    color: #fc466b;
+    border: 1px solid #fc466b;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+  }
+
+  /* Enhanced watermark */
+  .watermark {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    text-align: center;
+    z-index: 999;
+    background: var(--card-bg);
+    padding: 8px 20px;
+    border-radius: 25px;
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Light mode enhancements */
+  body.light-mode nav {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  body.light-mode input[type="file"],
+  body.light-mode input[type="text"],
+  body.light-mode textarea,
+  body.light-mode select {
+    background: rgba(255, 255, 255, 0.8);
+    color: #1e293b;
+  }
+
+  body.light-mode .extracted-message {
+    background: rgba(255, 255, 255, 0.9);
+    color: #1e293b;
+  }
+
+  body.light-mode .watermark {
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  body.light-mode .drag-area {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .header {
+      padding: 1rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+    }
+
+    .tab-container {
+      margin: 1rem;
+      max-width: none;
+    }
+
+    .tab-content {
+      padding: 1.5rem;
+    }
+
+    .nav-container {
+      padding: 0 1rem;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .nav-controls {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .tab-buttons {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .watermark {
+      bottom: 10px;
+      left: 10px;
+      right: 10px;
+      transform: none;
+    }
+
+    .notification-container {
+      right: 10px;
+      left: 10px;
+      max-width: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .tab-buttons {
+      grid-template-columns: 1fr;
+    }
+
+    .tab-button {
+      padding: 12px 16px;
+    }
+  }
+</style>
+</head>
+<body class="dark-mode">
+  <!-- Floating particles -->
+  <div class="particles">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Notification Container -->
+  <div class="notification-container" id="notificationContainer"></div>
+
+  <!-- Keyboard Shortcut Hint -->
+  <div class="shortcut-hint" id="shortcutHint">
+    Press H for shortcuts help
+  </div>
+
+  <!-- Enhanced Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="nav-logo">← 🔐 Pixel-cryp</a>
+      <div class="nav-controls">
+        <div class="theme-selector">
+          <select class="theme-dropdown" id="themeSelector">
+            <option value="dark-mode">🌙 Dark</option>
+            <option value="light-mode">☀️ Light</option>
+            <option value="blue-mode">🔵 Blue</option>
+            <option value="purple-mode">🟣 Purple</option>
+            <option value="green-mode">🟢 Green</option>
+          </select>
+        </div>
+        <div class="lang-selector">
+          <select id="languageSelector">
+            <option value="en">🇺🇸 English</option>
+            <option value="ar">🇸🇦 العربية</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+          </select>
+        </div>
+        <button class="clear-btn" id="clearBtn" onclick="clearAll()">🧹 Clear</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Enhanced Header -->
+  <div class="header">
+    <h1 data-translate="title">🔐 Pixel-Cryp(Hiding Digital Midea into images)</h1>
+    <p class="subtitle" data-translate="subtitle">Hide messages within images using cutting-edge cryptographic algorithms. Experience the invisible world of digital steganography.</p>
+  </div>
+
+  <div class="tab-container">
+    <div class="tab-buttons">
+      <button class="tab-button active" onclick="showTab('hide')" data-translate="tab-hide">🚀 Hide Message</button>
+      <button class="tab-button" onclick="showTab('extract')" data-translate="tab-extract">🔍 Extract Message</button>
+      <button class="tab-button" onclick="showTab('hideImage')" data-translate="tab-hide-image">🖼️ Hide Image</button>
+      <button class="tab-button" onclick="showTab('extractImage')" data-translate="tab-extract-image">🔓 Extract Image</button>
+      <button class="tab-button" onclick="showTab('xorCompare')" data-translate="tab-xor">⚔️ XOR Compare</button>
+      <button class="tab-button" onclick="showTab('capacity')" data-translate="tab-capacity">📊 Calculate Capacity</button>
+    </div>
+
+    <!-- Hide Message Tab -->
+    <div id="hideTab" class="tab-content active">
+      <form id="hideForm" action="/hide" method="POST" enctype="multipart/form-data">
+        <label for="imageInput" data-translate="label-select-image">📷 Select image to hide message in:</label>
+        <div class="drag-area" id="imageDragArea">
+          <div class="drag-text" data-translate="drag-image">🖼️ Drag & drop an image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('imageInput').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="image" id="imageInput" class="hidden-file-input" required />
+        <div class="info" id="suitabilityScore" data-translate="suitability">🧐 Suitability: Not checked</div>
+
+        <label for="secretText" data-translate="label-secret">✍️ Secret Message:</label>
+        <textarea name="secret" id="secretText" data-translate="placeholder-secret" placeholder="Enter your secret message here..." required></textarea>
+        <div id="secretTextContentWarning" class="content-warning"></div>
+        <div class="info" id="charCount">🔢 Characters: 0</div>
+
+        <label for="keyInput" data-translate="label-key">🔑 Encryption Key (optional):</label>
+        <input type="text" name="key" id="keyInput" data-translate="placeholder-key" placeholder="Enter encryption key (optional)" style="font-family: 'JetBrains Mono', monospace;" />
+        <div id="keyStrengthMeter" class="password-strength-meter"></div>
+        <div id="keyContentWarning" class="content-warning"></div>
+        <button type="button" id="generateKeyBtn" class="btn-success" style="margin-bottom: 20px;" data-translate="generate-key">🎲 Generate Random Key</button>
+
+        <label for="algorithmSelect" data-translate="label-algorithm">🔬 Embedding Algorithm:</label>
+        <select name="algorithm" id="algorithmSelect">
+          <option value="lsb" data-translate="algo-lsb">🔧 LSB (Least Significant Bit)</option>
+          <option value="dct" data-translate="algo-dct">📊 DCT (Frequency Domain)</option>
+          <option value="spread_spectrum" data-translate="algo-spread">🌐 Spread Spectrum</option>
+        </select>
+
+        <div class="info" id="capacityInfo" data-translate="capacity-info">📊 Capacity: Upload image to calculate</div>
+
+        <button type="submit" id="hideBtn" data-translate="btn-hide">🚀 Hide Message</button>
+        <div id="hideProgress" class="progress-indicator" style="display: none;">
+          <div class="spinner"></div>
+          <span data-translate="processing">Processing image...</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Extract Message Tab -->
+    <div id="extractTab" class="tab-content">
+      <form action="/extract" method="POST" enctype="multipart/form-data">
+        <label for="extractImage" data-translate="label-extract-image">🕵️‍♂️ Select image to extract message from:</label>
+        <div class="drag-area" id="extractDragArea">
+          <div class="drag-text" data-translate="drag-extract">🖼️ Drag & drop steganographic image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('extractImage').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="image" id="extractImage" class="hidden-file-input" required />
+
+        <label for="extractAlgorithmSelect" data-translate="label-algorithm">🔬 Extraction Algorithm:</label>
+        <select name="algorithm" id="extractAlgorithmSelect">
+          <option value="lsb" data-translate="algo-lsb">🔧 LSB (Least Significant Bit)</option>
+          <option value="dct" data-translate="algo-dct">📊 DCT (Frequency Domain)</option>
+          <option value="spread_spectrum" data-translate="algo-spread">🌐 Spread Spectrum</option>
+        </select>
+
+        <label for="extractKeyInput" data-translate="label-key">🔑 Decryption Key (if used):</label>
+        <input type="text" name="key" id="extractKeyInput" data-translate="placeholder-extract-key" placeholder="Enter decryption key (if used)" style="font-family: 'JetBrains Mono', monospace;" />
+        <div id="extractKeyStrengthMeter" class="password-strength-meter"></div>
+        <div id="extractKeyContentWarning" class="content-warning"></div>
+        <button type="button" id="generateExtractKeyBtn" class="btn-success" style="margin-bottom: 20px;" data-translate="generate-key">🎲 Generate Random Key</button>
+
+        <button type="submit" id="extractBtn" data-translate="btn-extract">🔍 Extract Message</button>
+        <div id="extractProgress" class="progress-indicator" style="display: none;">
+          <div class="spinner"></div>
+          <span data-translate="extracting">Extracting message...</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Hide Image Tab -->
+    <div id="hideImageTab" class="tab-content">
+      <form id="hideImageForm" action="/hide_image" method="POST" enctype="multipart/form-data">
+        <label for="coverImageInput" data-translate="label-cover-image">🖼️ Select cover image (to hide image in):</label>
+        <div class="drag-area" id="coverDragArea">
+          <div class="drag-text" data-translate="drag-cover">🖼️ Drag & drop cover image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('coverImageInput').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="cover_image" id="coverImageInput" class="hidden-file-input" accept="image/*" required />
+
+        <label for="secretImageInput" data-translate="label-secret-image">🔒 Select secret image (to be hidden):</label>
+        <div class="drag-area" id="secretImageDragArea">
+          <div class="drag-text" data-translate="drag-secret">🖼️ Drag & drop secret image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('secretImageInput').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="secret_image" id="secretImageInput" class="hidden-file-input" accept="image/*" required />
+        <div class="info" id="imageSizeInfo" data-translate="image-size-info">📏 Image sizes: Upload images to check compatibility</div>
+
+        <label for="imageKeyInput" data-translate="label-key">🔑 Encryption Key (optional):</label>
+        <input type="text" name="key" id="imageKeyInput" data-translate="placeholder-key" placeholder="Enter encryption key (optional)" style="font-family: 'JetBrains Mono', monospace;" />
+        <div id="imageKeyStrengthMeter" class="password-strength-meter"></div>
+        <div id="imageKeyContentWarning" class="content-warning"></div>
+        <button type="button" id="generateImageKeyBtn" class="btn-success" style="margin-bottom: 20px;" data-translate="generate-key">🎲 Generate Random Key</button>
+
+        <label for="imageAlgorithmSelect" data-translate="label-algorithm">🔬 Hiding Algorithm:</label>
+        <select name="algorithm" id="imageAlgorithmSelect">
+          <option value="lsb_image" data-translate="algo-lsb-simple">🔧 LSB (Simple & Fast)</option>
+          <option value="random_lsb" data-translate="algo-random-lsb">🎲 Random LSB (More Secure)</option>
+        </select>
+
+        <button type="submit" id="hideImageBtn" data-translate="btn-hide-image">🖼️ Hide Image</button>
+        <div id="hideImageProgress" class="progress-indicator" style="display: none;">
+          <div class="spinner"></div>
+          <span data-translate="processing-images">Processing images...</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Extract Image Tab -->
+    <div id="extractImageTab" class="tab-content">
+      <form action="/extract_image" method="POST" enctype="multipart/form-data">
+        <label for="extractImageInput" data-translate="label-extract-stego">🕵️‍♂️ Select steganographic image (with hidden image):</label>
+        <div class="drag-area" id="extractImageDragArea">
+          <div class="drag-text" data-translate="drag-stego">🖼️ Drag & drop steganographic image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('extractImageInput').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="image" id="extractImageInput" class="hidden-file-input" accept="image/*" required />
+
+        <label for="extractImageAlgorithmSelect" data-translate="label-algorithm">🔬 Extraction Algorithm:</label>
+        <select name="algorithm" id="extractImageAlgorithmSelect">
+          <option value="lsb_image" data-translate="algo-lsb-simple">🔧 LSB (Simple & Fast)</option>
+          <option value="random_lsb" data-translate="algo-random-lsb">🎲 Random LSB (More Secure)</option>
+        </select>
+
+        <label for="extractImageKeyInput" data-translate="label-key">🔑 Decryption Key (if used):</label>
+        <input type="text" name="key" id="extractImageKeyInput" data-translate="placeholder-extract-key" placeholder="Enter decryption key (if used)" style="font-family: 'JetBrains Mono', monospace;" />
+        <div id="extractImageKeyStrengthMeter" class="password-strength-meter"></div>
+        <div id="extractImageKeyContentWarning" class="content-warning"></div>
+        <button type="button" id="generateExtractImageKeyBtn" class="btn-success" style="margin-bottom: 20px;" data-translate="generate-key">🎲 Generate Random Key</button>
+
+        <button type="submit" id="extractImageBtn" data-translate="btn-extract-image">🔓 Extract Hidden Image</button>
+        <div id="extractImageProgress" class="progress-indicator" style="display: none;">
+          <div class="spinner"></div>
+          <span data-translate="extracting-image">Extracting image...</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- XOR Compare Tab -->
+    <div id="xorCompareTab" class="tab-content">
+      <form id="xorCompareForm" action="/xor_compare" method="POST" enctype="multipart/form-data">
+        <label for="originalImageCompare" data-translate="label-original-image">📷 Original Image:</label>
+        <div class="drag-area" id="originalDragArea">
+          <div class="drag-text" data-translate="drag-original">🖼️ Drag & drop original image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('originalImageCompare').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="original_image" id="originalImageCompare" class="hidden-file-input" required />
+
+        <label for="stegoImageCompare" data-translate="label-stego-image">🔒 Steganographic Image:</label>
+        <div class="drag-area" id="stegoDragArea">
+          <div class="drag-text" data-translate="drag-stego-compare">🖼️ Drag & drop steganographic image here</div>
+          <div class="drag-or" data-translate="or">or</div>
+          <button type="button" onclick="document.getElementById('stegoImageCompare').click()" data-translate="browse-image">📂 Browse Files</button>
+        </div>
+        <input type="file" name="stego_image" id="stegoImageCompare" class="hidden-file-input" required />
+
+        <label for="techniqueSelect" data-translate="label-technique">🔧 Technique Used:</label>
+        <select name="technique" id="techniqueSelect">
+          <optgroup label="Text Hiding" data-translate="group-text">
+            <option value="lsb" data-translate="technique-lsb">📝 LSB Sequential</option>
+            <option value="spread_spectrum" data-translate="technique-spread">📡 Spread Spectrum</option>
+            <option value="dct" data-translate="technique-dct">🌊 DCT Transform</option>
+          </optgroup>
+          <optgroup label="Image Hiding" data-translate="group-image">
+            <option value="lsb_image" data-translate="technique-lsb-image">🖼️ LSB Image Hiding</option>
+            <option value="random_lsb" data-translate="technique-random">🎲 Random LSB</option>
+          </optgroup>
+        </select>
+
+        <button type="submit" id="xorCompareBtn" class="btn-warning" data-translate="btn-compare">⚔️ Compare Images</button>
+        <div id="xorCompareProgress" class="progress-indicator" style="display: none;">
+          <div class="spinner"></div>
+          <span data-translate="analyzing">Analyzing differences...</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- Calculate Capacity Tab -->
+    <div id="capacityTab" class="tab-content">
+      <h3 style="color: #4facfe; margin-bottom: 25px; font-size: 1.5rem;" data-translate="capacity-title">📊 Message Capacity Calculator</h3>
+
+      <label for="capacityImage" data-translate="label-select-image">📷 Select Image:</label>
+      <div class="drag-area" id="capacityDragArea">
+        <div class="drag-text" data-translate="drag-capacity">🖼️ Drag & drop image for capacity analysis</div>
+        <div class="drag-or" data-translate="or">or</div>
+        <button type="button" onclick="document.getElementById('capacityImage').click()" data-translate="browse-image">📂 Browse Files</button>
+      </div>
+      <input type="file" name="image" id="capacityImage" class="hidden-file-input" />
+
+      <label for="capacityAlgorithmSelect" data-translate="label-algorithm">🔬 Algorithm:</label>
+      <select name="algorithm" id="capacityAlgorithmSelect">
+        <option value="lsb" data-translate="algo-lsb">🔧 LSB (Least Significant Bit)</option>
+        <option value="dct" data-translate="algo-dct">📊 DCT (Frequency Domain)</option>
+        <option value="spread_spectrum" data-translate="algo-spread">🌐 Spread Spectrum</option>
+      </select>
+
+      <button type="button" id="calculateCapacityBtn" class="btn-secondary" data-translate="btn-calculate">📏 Calculate Capacity</button>
+      <div id="capacityResult" class="info" style="margin-top: 20px; display: none;"></div>
+    </div>
+  </div>
+
+  {% if extracted %}
+    <div class="extracted-message">
+      <strong data-translate="extracted-msg">📝 Extracted Message:</strong><br />
+      {{ extracted }}
+    </div>
+  {% endif %}
+
+  <!-- Enhanced Watermark -->
+  <div class="watermark">
+    <span data-translate="watermark">🎓 Graduation Project 2025 • All Rights Reserved<br>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour</span>
+  </div>
+
+  <script>
+    // Translation system
+    const translations = {
+      en: {
+        title: "🔐 Pixel-cryp(Hiding Digital Midea in Images)",
+        subtitle: "Hide messages within images using cutting-edge cryptographic algorithms. Experience the invisible world of digital steganography.",
+        "tab-hide": "🚀 Hide Message",
+        "tab-extract": "🔍 Extract Message",
+        "tab-hide-image": "🖼️ Hide Image",
+        "tab-extract-image": "🔓 Extract Image",
+        "tab-xor": "⚔️ XOR Compare",
+        "tab-capacity": "📊 Calculate Capacity",
+        "label-select-image": "📷 Select image to hide message in:",
+        "drag-image": "🖼️ Drag & drop an image here",
+        "or": "or",
+        "browse-image": "📂 Browse Files",
+        suitability: "🧐 Suitability: Not checked",
+        "label-secret": "✍️ Secret Message:",
+        "placeholder-secret": "Enter your secret message here...",
+        "label-key": "🔑 Encryption Key (optional):",
+        "placeholder-key": "Enter encryption key (optional)",
+        "generate-key": "🎲 Generate Random Key",
+        "label-algorithm": "🔬 Embedding Algorithm:",
+        "algo-lsb": "🔧 LSB (Least Significant Bit)",
+        "algo-dct": "📊 DCT (Frequency Domain)",
+        "algo-spread": "🌐 Spread Spectrum",
+        "capacity-info": "📊 Capacity: Upload image to calculate",
+        "btn-hide": "🚀 Hide Message",
+        processing: "Processing image...",
+        watermark: "🎓 Graduation Project 2025 • All Rights Reserved<br>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour"
+      },
+      ar: {
+        title: "🔐 مجموعة التشفير المتقدمة",
+        subtitle: "إخفاء الرسائل داخل الصور باستخدام خوارزميات التشفير المتطورة. اكتشف العالم غير المرئي للتشفير الرقمي.",
+        "tab-hide": "🚀 إخفاء رسالة",
+        "tab-extract": "🔍 استخراج رسالة",
+        "tab-hide-image": "🖼️ إخفاء صورة",
+        "tab-extract-image": "🔓 استخراج صورة",
+        "tab-xor": "⚔️ مقارنة XOR",
+        "tab-capacity": "📊 حساب السعة",
+        "label-select-image": "📷 اختر صورة لإخفاء الرسالة بها:",
+        "drag-image": "🖼️ اسحب وأفلت صورة هنا",
+        "or": "أو",
+        "browse-image": "📂 تصفح الملفات",
+        suitability: "🧐 الملاءمة: لم يتم الفحص",
+        "label-secret": "✍️ الرسالة السرية:",
+        "placeholder-secret": "أدخل رسالتك السرية هنا...",
+        "label-key": "🔑 مفتاح التشفير (اختياري):",
+        "placeholder-key": "أدخل مفتاح التشفير (اختياري)",
+        "generate-key": "🎲 توليد مفتاح عشوائي",
+        "label-algorithm": "🔬 خوارزمية التضمين:",
+        "algo-lsb": "🔧 LSB (البت الأقل أهمية)",
+        "algo-dct": "📊 DCT (المجال الترددي)",
+        "algo-spread": "🌐 الطيف المنتشر",
+        "capacity-info": "📊 السعة: قم بتحميل صورة للحساب",
+        "btn-hide": "🚀 إخفاء الرسالة",
+        processing: "معالجة الصورة...",
+        watermark: "🎓 مشروع التخرج 2025 • جميع الحقوق محفوظة<br>رهف الاعرج • ريتان الجماعين • مصعب دبور"
+      },
+      es: {
+        title: "🔐 Suite de Esteganografía Avanzada",
+        subtitle: "Oculta mensajes dentro de imágenes usando algoritmos criptográficos de vanguardia. Experimenta el mundo invisible de la esteganografía digital.",
+        "tab-hide": "🚀 Ocultar Mensaje",
+        "tab-extract": "🔍 Extraer Mensaje",
+        "tab-hide-image": "🖼️ Ocultar Imagen",
+        "tab-extract-image": "🔓 Extraer Imagen",
+        "tab-xor": "⚔️ Comparar XOR",
+        "tab-capacity": "📊 Calcular Capacidad",
+        watermark: "🎓 Proyecto de Graduación 2025 • Todos los Derechos Reservados<br>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour"
+      },
+      fr: {
+        title: "🔐 Suite de Stéganographie Avancée",
+        subtitle: "Cachez des messages dans des images en utilisant des algorithmes cryptographiques de pointe. Découvrez le monde invisible de la stéganographie numérique.",
+        "tab-hide": "🚀 Cacher Message",
+        "tab-extract": "🔍 Extraire Message",
+        "tab-hide-image": "🖼️ Cacher Image",
+        "tab-extract-image": "🔓 Extraire Image",
+        "tab-xor": "⚔️ Comparer XOR",
+        "tab-capacity": "📊 Calculer Capacité",
+        watermark: "🎓 Projet de Fin d'Études 2025 • Tous Droits Réservés<br>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour"
+      },
+      de: {
+        title: "🔐 Erweiterte Steganographie Suite",
+        subtitle: "Verstecken Sie Nachrichten in Bildern mit modernsten kryptographischen Algorithmen. Erleben Sie die unsichtbare Welt der digitalen Steganographie.",
+        "tab-hide": "🚀 Nachricht Verstecken",
+        "tab-extract": "🔍 Nachricht Extrahieren",
+        "tab-hide-image": "🖼️ Bild Verstecken",
+        "tab-extract-image": "🔓 Bild Extrahieren",
+        "tab-xor": "⚔️ XOR Vergleichen",
+        "tab-capacity": "📊 Kapazität Berechnen",
+        watermark: "🎓 Abschlussprojekt 2025 • Alle Rechte Vorbehalten<br>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour"
+      }
+    };
+
+    let currentLanguage = 'en';
+    let currentTheme = 'dark-mode';
+
+    // Notification system
+    function showNotification(message, type = 'info', duration = 5000) {
+      const container = document.getElementById('notificationContainer');
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0; font-size: 1.2rem;">×</button>
+        </div>
+      `;
+      
+      container.appendChild(notification);
+      
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.remove();
+        }
+      }, duration);
+    }
+
+    // Language translation
+    function translatePage(lang) {
+      const elements = document.querySelectorAll('[data-translate]');
+      elements.forEach(element => {
+        const key = element.getAttribute('data-translate');
+        if (translations[lang] && translations[lang][key]) {
+          if (element.tagName === 'INPUT' && (element.type === 'text' || element.type === 'textarea')) {
+            element.placeholder = translations[lang][key];
+          } else {
+            element.innerHTML = translations[lang][key];
+          }
+        }
+      });
+      currentLanguage = lang;
+      localStorage.setItem('language', lang);
+      showNotification(`Language changed to ${lang.toUpperCase()}`, 'success');
+    }
+
+    // Theme management
+    function changeTheme(theme) {
+      document.body.className = theme;
+      currentTheme = theme;
+      localStorage.setItem('theme', theme);
+      showNotification(`Theme changed to ${theme.replace('-mode', '')}`, 'success');
+    }
+
+    // Clear all functionality
+    function clearAll() {
+      // Clear all form inputs
+      document.querySelectorAll('input[type="text"], textarea, input[type="file"]').forEach(input => {
+        input.value = '';
+      });
+      
+      // Reset all selects to first option
+      document.querySelectorAll('select').forEach(select => {
+        select.selectedIndex = 0;
+      });
+      
+      // Clear all info displays
+      document.querySelectorAll('.info').forEach(info => {
+        if (info.id === 'suitabilityScore') {
+          info.textContent = '🧐 Suitability: Not checked';
+        } else if (info.id === 'charCount') {
+          info.textContent = '🔢 Characters: 0';
+        } else if (info.id === 'capacityInfo') {
+          info.textContent = '📊 Capacity: Upload image to calculate';
+        } else if (info.id === 'imageSizeInfo') {
+          info.textContent = '📏 Image sizes: Upload images to check compatibility';
+        }
+      });
+      
+      // Clear password strength meters
+      document.querySelectorAll('.password-strength-meter').forEach(meter => {
+        meter.innerHTML = '';
+      });
+      
+      // Hide content warnings
+      document.querySelectorAll('.content-warning').forEach(warning => {
+        warning.style.display = 'none';
+      });
+      
+      // Hide progress indicators
+      document.querySelectorAll('.progress-indicator').forEach(progress => {
+        progress.style.display = 'none';
+      });
+      
+      // Reset buttons
+      const buttonResets = [
+        { id: 'hideBtn', text: '🚀 Hide Message' },
+        { id: 'extractBtn', text: '🔍 Extract Message' },
+        { id: 'hideImageBtn', text: '🖼️ Hide Image' },
+        { id: 'extractImageBtn', text: '🔓 Extract Hidden Image' },
+        { id: 'xorCompareBtn', text: '⚔️ Compare Images' }
+      ];
+
+      buttonResets.forEach(({ id, text }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = text;
+        }
+      });
+      
+      showNotification('All fields cleared successfully!', 'success');
+    }
+
+    // Drag and drop functionality
+    function setupDragAndDrop(dragAreaId, fileInputId) {
+      const dragArea = document.getElementById(dragAreaId);
+      const fileInput = document.getElementById(fileInputId);
+      
+      if (!dragArea || !fileInput) return;
+      
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dragArea.addEventListener(eventName, preventDefaults, false);
+      });
+      
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dragArea.addEventListener(eventName, () => dragArea.classList.add('drag-over'), false);
+      });
+      
+      ['dragleave', 'drop'].forEach(eventName => {
+        dragArea.addEventListener(eventName, () => dragArea.classList.remove('drag-over'), false);
+      });
+      
+      dragArea.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        
+        if (files.length > 0) {
+          fileInput.files = files;
+          fileInput.dispatchEvent(new Event('change'));
+          showNotification(`File "${files[0].name}" uploaded successfully!`, 'success');
+        }
+      });
+    }
+
+    // Keyboard shortcuts
+    const shortcuts = {
+      'KeyH': () => showShortcutHelp(),
+      'KeyC': () => clearAll(),
+      'Digit1': () => showTab('hide'),
+      'Digit2': () => showTab('extract'),
+      'Digit3': () => showTab('hideImage'),
+      'Digit4': () => showTab('extractImage'),
+      'Digit5': () => showTab('xorCompare'),
+      'Digit6': () => showTab('capacity'),
+      'KeyT': () => cycleTheme(),
+      'KeyL': () => cycleLanguage()
+    };
+
+    function showShortcutHelp() {
+      const helpText = `
+        Keyboard Shortcuts:
+        H - Show this help
+        C - Clear all fields
+        1-6 - Switch between tabs
+        T - Cycle themes
+        L - Cycle languages
+      `;
+      showNotification(helpText, 'info', 8000);
+    }
+
+    function cycleTheme() {
+      const themes = ['dark-mode', 'light-mode', 'blue-mode', 'purple-mode', 'green-mode'];
+      const currentIndex = themes.indexOf(currentTheme);
+      const nextTheme = themes[(currentIndex + 1) % themes.length];
+      changeTheme(nextTheme);
+      document.getElementById('themeSelector').value = nextTheme;
+    }
+
+    function cycleLanguage() {
+      const languages = ['en', 'ar', 'es', 'fr', 'de'];
+      const currentIndex = languages.indexOf(currentLanguage);
+      const nextLang = languages[(currentIndex + 1) % languages.length];
+      translatePage(nextLang);
+      document.getElementById('languageSelector').value = nextLang;
+    }
+
+    // Event listeners for keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.altKey) {
+        if (shortcuts[e.code]) {
+          e.preventDefault();
+          shortcuts[e.code]();
+        }
+      }
+    });
+
+    // Show shortcut hint on load
+    document.addEventListener('DOMContentLoaded', () => {
+      const hint = document.getElementById('shortcutHint');
+      setTimeout(() => {
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 3000);
+      }, 2000);
+    });
+
+    // Tab functionality with enhanced animations
+    function showTab(tabName) {
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      document.getElementById(tabName + 'Tab').classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // Enhanced light/dark toggle
+    document.getElementById('themeSelector').addEventListener('change', (e) => {
+      changeTheme(e.target.value);
+    });
+
+    document.getElementById('languageSelector').addEventListener('change', (e) => {
+      translatePage(e.target.value);
+    });
+
+    // Load saved preferences
+    if (localStorage.getItem('theme')) {
+      const savedTheme = localStorage.getItem('theme');
+      changeTheme(savedTheme);
+      document.getElementById('themeSelector').value = savedTheme;
+    }
+
+    if (localStorage.getItem('language')) {
+      const savedLang = localStorage.getItem('language');
+      translatePage(savedLang);
+      document.getElementById('languageSelector').value = savedLang;
+    }
+
+    // Character count and content validation
+    const secretText = document.getElementById('secretText');
+    const charCount = document.getElementById('charCount');
+    secretText.addEventListener('input', () => {
+      charCount.textContent = `🔢 Characters: ${secretText.value.length}`;
+      validateContent('secretText', 'secretTextContentWarning');
+    });
+
+    // Password strength meters
+    const keyInputs = [
+      { inputId: 'keyInput', meterId: 'keyStrengthMeter', warningId: 'keyContentWarning' },
+      { inputId: 'extractKeyInput', meterId: 'extractKeyStrengthMeter', warningId: 'extractKeyContentWarning' },
+      { inputId: 'imageKeyInput', meterId: 'imageKeyStrengthMeter', warningId: 'imageKeyContentWarning' },
+      { inputId: 'extractImageKeyInput', meterId: 'extractImageKeyStrengthMeter', warningId: 'extractImageKeyContentWarning' }
+    ];
+
+    keyInputs.forEach(({ inputId, meterId, warningId }) => {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.addEventListener('input', () => {
+          updatePasswordStrength(inputId, meterId);
+          validateContent(inputId, warningId);
+        });
+      }
+    });
+
+    // Enhanced image suitability checking
+    function calculateEntropy(pixels) {
+      const histogram = new Array(256).fill(0);
+      const pixelCount = pixels.length / 4;
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        const gray = Math.floor(0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]);
+        histogram[gray]++;
+      }
+
+      let entropy = 0;
+      for (let i = 0; i < 256; i++) {
+        if (histogram[i] === 0) continue;
+        const p = histogram[i] / pixelCount;
+        entropy -= p * Math.log2(p);
+      }
+      return entropy;
+    }
+
+    function maxRunLength(pixels, threshold = 2) {
+      let maxRun = 1;
+      let currentRun = 1;
+
+      const grays = [];
+      for (let i = 0; i < pixels.length; i += 4) {
+        const gray = Math.floor(0.299 * pixels[i] + 0.587 * pixels[i + 1] + 0.114 * pixels[i + 2]);
+        grays.push(gray);
+      }
+
+      for (let i = 1; i < grays.length; i++) {
+        if (Math.abs(grays[i] - grays[i - 1]) <= threshold) {
+          currentRun++;
+          if (currentRun > maxRun) maxRun = currentRun;
+        } else {
+          currentRun = 1;
+        }
+      }
+      return maxRun;
+    }
+
+    const imageInput = document.getElementById('imageInput');
+    const scoreDisplay = document.getElementById('suitabilityScore');
+
+    imageInput.addEventListener('change', () => {
+      const file = imageInput.files[0];
+      if (!file || !file.type.startsWith('image')) {
+        scoreDisplay.textContent = '🧐 Suitability: Invalid image';
+        scoreDisplay.style.borderLeftColor = '#fc466b';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const img = new Image();
+        img.onload = function () {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const pixels = imgData.data;
+
+          const entropy = calculateEntropy(pixels);
+          const runLength = maxRunLength(pixels, 2);
+          const maxAllowedRun = 5000;
+
+          if (entropy < 3) {
+            scoreDisplay.textContent = `🧐 Suitability: Too low entropy (${entropy.toFixed(2)}), not suitable`;
+            scoreDisplay.style.borderLeftColor = '#fc466b';
+          } else if (runLength > maxAllowedRun) {
+            scoreDisplay.textContent = `🧐 Suitability: Too many similar pixels in a row (${runLength}), not suitable`;
+            scoreDisplay.style.borderLeftColor = '#ffc107';
+          } else {
+            scoreDisplay.textContent = `🧐 Suitability: Excellent (Entropy: ${entropy.toFixed(2)}, Max Run: ${runLength})`;
+            scoreDisplay.style.borderLeftColor = '#38ef7d';
+          }
+        };
+        img.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Content filtering
+    function containsInappropriateContent(text) {
+      const inappropriateWords = [
+        'porn', 'xxx', 'sex', 'nude', 'naked', 'adult', 'erotic', 'sexual',
+        'explicit', 'nsfw', 'inappropriate', 'offensive', 'vulgar', 'profanity'
+      ];
+      const lowercaseText = text.toLowerCase();
+      return inappropriateWords.some(word => lowercaseText.includes(word));
+    }
+
+    // Enhanced password strength calculation
+    function calculatePasswordStrength(password) {
+      let score = 0;
+      let feedback = [];
+
+      if (password.length === 0) {
+        return { score: 0, strength: 'No password', feedback: [], color: '#64748b' };
+      }
+
+      if (password.length >= 8) score += 25;
+      else feedback.push('At least 8 characters');
+
+      if (password.length >= 12) score += 15;
+      else if (password.length >= 8) feedback.push('Consider 12+ characters');
+
+      if (/[a-z]/.test(password)) score += 15;
+      else feedback.push('Add lowercase letters');
+
+      if (/[A-Z]/.test(password)) score += 15;
+      else feedback.push('Add uppercase letters');
+
+      if (/[0-9]/.test(password)) score += 15;
+      else feedback.push('Add numbers');
+
+      if (/[^A-Za-z0-9]/.test(password)) score += 15;
+      else feedback.push('Add special characters');
+
+      if (password.length >= 16) score += 10;
+
+      let strength, color;
+      if (score >= 85) {
+        strength = 'Very Strong';
+        color = '#38ef7d';
+      } else if (score >= 70) {
+        strength = 'Strong';
+        color = '#11998e';
+      } else if (score >= 50) {
+        strength = 'Medium';
+        color = '#ffc107';
+      } else if (score >= 25) {
+        strength = 'Weak';
+        color = '#fd7e14';
+      } else {
+        strength = 'Very Weak';
+        color = '#fc466b';
+      }
+
+      return { score: Math.min(score, 100), strength, feedback, color };
+    }
+
+    function updatePasswordStrength(inputId, meterId) {
+      const input = document.getElementById(inputId);
+      const meter = document.getElementById(meterId);
+
+      if (!input || !meter) return;
+
+      const password = input.value;
+      const result = calculatePasswordStrength(password);
+
+      meter.innerHTML = `
+        <div class="password-strength-bar">
+          <div class="password-strength-fill" style="width: ${result.score}%; background-color: ${result.color}"></div>
+        </div>
+        <div class="password-strength-text" style="color: ${result.color}">
+          ${result.strength} (${result.score}%)
+        </div>
+        ${result.feedback.length > 0 ? `<div class="password-feedback">💡 ${result.feedback.join(', ')}</div>` : ''}
+      `;
+    }
+
+    function validateContent(inputId, warningId) {
+      const input = document.getElementById(inputId);
+      const warning = document.getElementById(warningId);
+
+      if (!input || !warning) return true;
+
+      const text = input.value;
+      if (containsInappropriateContent(text)) {
+        warning.style.display = 'block';
+        warning.innerHTML = '⚠️ Inappropriate content detected. Please use appropriate language.';
+        input.style.borderColor = '#fc466b';
+        return false;
+      } else {
+        warning.style.display = 'none';
+        input.style.borderColor = '';
+        return true;
+      }
+    }
+
+    // Enhanced random key generation
+    function generateRandomKey(length = 32) {
+      const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+      let result = '';
+      const randomValues = new Uint8Array(length);
+      crypto.getRandomValues(randomValues);
+
+      for (let i = 0; i < length; i++) {
+        result += charset[randomValues[i] % charset.length];
+      }
+      return result;
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification('✅ Key copied to clipboard!', 'success');
+      });
+    }
+
+    // Key generation event listeners
+    document.getElementById('generateKeyBtn').addEventListener('click', () => {
+      const keyInput = document.getElementById('keyInput');
+      const newKey = generateRandomKey();
+      keyInput.value = newKey;
+      keyInput.focus();
+      keyInput.select();
+      updatePasswordStrength('keyInput', 'keyStrengthMeter');
+      copyToClipboard(newKey);
+    });
+
+    document.getElementById('generateExtractKeyBtn').addEventListener('click', () => {
+      const extractKeyInput = document.getElementById('extractKeyInput');
+      const newKey = generateRandomKey();
+      extractKeyInput.value = newKey;
+      extractKeyInput.focus();
+      extractKeyInput.select();
+      updatePasswordStrength('extractKeyInput', 'extractKeyStrengthMeter');
+      copyToClipboard(newKey);
+    });
+
+    document.getElementById('generateImageKeyBtn').addEventListener('click', () => {
+      const imageKeyInput = document.getElementById('imageKeyInput');
+      const newKey = generateRandomKey();
+      imageKeyInput.value = newKey;
+      imageKeyInput.focus();
+      imageKeyInput.select();
+      updatePasswordStrength('imageKeyInput', 'imageKeyStrengthMeter');
+      copyToClipboard(newKey);
+    });
+
+    document.getElementById('generateExtractImageKeyBtn').addEventListener('click', () => {
+      const extractImageKeyInput = document.getElementById('extractImageKeyInput');
+      const newKey = generateRandomKey();
+      extractImageKeyInput.value = newKey;
+      extractImageKeyInput.focus();
+      extractImageKeyInput.select();
+      updatePasswordStrength('extractImageKeyInput', 'extractImageKeyStrengthMeter');
+      copyToClipboard(newKey);
+    });
+
+    // Capacity calculation
+    document.getElementById('calculateCapacityBtn').addEventListener('click', () => {
+      const imageFile = document.getElementById('capacityImage').files[0];
+      const algorithm = document.getElementById('capacityAlgorithmSelect').value;
+
+      if (!imageFile) {
+        showNotification('Please select an image first', 'warning');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      formData.append('algorithm', algorithm);
+
+      fetch('/capacity', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.text())
+      .then(data => {
+        const resultDiv = document.getElementById('capacityResult');
+        resultDiv.innerHTML = data;
+        resultDiv.style.display = 'block';
+        showNotification('Capacity calculated successfully!', 'success');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showNotification('Error calculating capacity', 'error');
+      });
+    });
+
+    // Update capacity info
+    function updateCapacityInfo() {
+      const imageFile = document.getElementById('imageInput').files[0];
+      const algorithm = document.getElementById('algorithmSelect').value;
+      const capacityInfo = document.getElementById('capacityInfo');
+
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        formData.append('algorithm', algorithm);
+
+        fetch('/capacity', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+          const match = data.match(/(\d+) bytes/);
+          if (match) {
+            capacityInfo.textContent = `📊 Capacity: ${match[1]} bytes (${algorithm.toUpperCase()})`;
+            capacityInfo.style.borderLeftColor = '#4facfe';
+          }
+        })
+        .catch(error => {
+          capacityInfo.textContent = '📊 Capacity: Error calculating';
+          capacityInfo.style.borderLeftColor = '#fc466b';
+        });
+      }
+    }
+
+    document.getElementById('imageInput').addEventListener('change', updateCapacityInfo);
+    document.getElementById('algorithmSelect').addEventListener('change', updateCapacityInfo);
+
+    // Image size checking
+    function checkImageSizes() {
+      const coverFile = document.getElementById('coverImageInput').files[0];
+      const secretFile = document.getElementById('secretImageInput').files[0];
+      const sizeInfo = document.getElementById('imageSizeInfo');
+
+      if (coverFile && secretFile) {
+        const coverImg = new Image();
+        const secretImg = new Image();
+        let loadedCount = 0;
+
+        function checkSizes() {
+          loadedCount++;
+          if (loadedCount === 2) {
+            const maxSecretWidth = coverImg.width / 2;
+            const maxSecretHeight = coverImg.height / 2;
+
+            if (secretImg.width <= maxSecretWidth && secretImg.height <= maxSecretHeight) {
+              sizeInfo.textContent = `📏 ✅ Compatible! Cover: ${coverImg.width}x${coverImg.height}, Secret: ${secretImg.width}x${secretImg.height}`;
+              sizeInfo.style.borderLeftColor = '#38ef7d';
+            } else {
+              sizeInfo.textContent = `📏 ⚠️ Secret image will be resized. Cover: ${coverImg.width}x${coverImg.height}, Secret: ${secretImg.width}x${secretImg.height}`;
+              sizeInfo.style.borderLeftColor = '#ffc107';
+            }
+          }
+        }
+
+        coverImg.onload = checkSizes;
+        secretImg.onload = checkSizes;
+        coverImg.src = URL.createObjectURL(coverFile);
+        secretImg.src = URL.createObjectURL(secretFile);
+      }
+    }
+
+    document.getElementById('coverImageInput').addEventListener('change', checkImageSizes);
+    document.getElementById('secretImageInput').addEventListener('change', checkImageSizes);
+
+    // Form validation and submission handlers
+    function validateFormContent(formId) {
+      const form = document.getElementById(formId);
+      if (!form) return true;
+
+      const textInputs = form.querySelectorAll('input[type="text"], textarea');
+      let isValid = true;
+
+      textInputs.forEach(input => {
+        if (containsInappropriateContent(input.value)) {
+          isValid = false;
+          input.style.borderColor = '#fc466b';
+
+          const warningId = input.id + 'ContentWarning';
+          const warning = document.getElementById(warningId);
+          if (warning) {
+            warning.style.display = 'block';
+            warning.innerHTML = '⚠️ Inappropriate content detected. Please use appropriate language.';
+          }
+        }
+      });
+
+      if (!isValid) {
+        showNotification('⚠️ Please remove inappropriate content from your inputs before submitting.', 'error');
+      }
+
+      return isValid;
+    }
+
+    // Form submission handlers
+    document.getElementById('hideForm').addEventListener('submit', function(e) {
+      if (!validateFormContent('hideForm')) {
+        e.preventDefault();
+        return;
+      }
+
+      const hideBtn = document.getElementById('hideBtn');
+      const hideProgress = document.getElementById('hideProgress');
+
+      hideBtn.disabled = true;
+      hideBtn.textContent = '⏳ Processing...';
+      hideProgress.style.display = 'flex';
+      showNotification('Processing your steganographic image...', 'info');
+    });
+
+    document.querySelector('form[action="/extract"]').addEventListener('submit', function(e) {
+      const extractBtn = document.getElementById('extractBtn');
+      const extractProgress = document.getElementById('extractProgress');
+
+      extractBtn.disabled = true;
+      extractBtn.textContent = '⏳ Extracting...';
+      extractProgress.style.display = 'flex';
+      showNotification('Extracting hidden message...', 'info');
+    });
+
+    document.getElementById('hideImageForm').addEventListener('submit', function(e) {
+      if (!validateFormContent('hideImageForm')) {
+        e.preventDefault();
+        return;
+      }
+
+      const hideImageBtn = document.getElementById('hideImageBtn');
+      const hideImageProgress = document.getElementById('hideImageProgress');
+
+      hideImageBtn.disabled = true;
+      hideImageBtn.textContent = '⏳ Processing Images...';
+      hideImageProgress.style.display = 'flex';
+      showNotification('Processing image steganography...', 'info');
+    });
+
+    document.querySelector('form[action="/extract_image"]').addEventListener('submit', function(e) {
+      const extractImageBtn = document.getElementById('extractImageBtn');
+      const extractImageProgress = document.getElementById('extractImageProgress');
+
+      extractImageBtn.disabled = true;
+      extractImageBtn.textContent = '⏳ Extracting Image...';
+      extractImageProgress.style.display = 'flex';
+      showNotification('Extracting hidden image...', 'info');
+    });
+
+    document.querySelector('form[action="/xor_compare"]').addEventListener('submit', function(e) {
+      const xorBtn = document.getElementById('xorCompareBtn');
+      const xorProgress = document.getElementById('xorCompareProgress');
+
+      if (xorBtn && xorProgress) {
+        xorBtn.disabled = true;
+        xorBtn.textContent = '⏳ Generating Comparison...';
+        xorProgress.style.display = 'flex';
+        showNotification('Analyzing image differences...', 'info');
+      }
+    });
+
+    // Setup all drag and drop areas
+    document.addEventListener('DOMContentLoaded', function() {
+      setupDragAndDrop('imageDragArea', 'imageInput');
+      setupDragAndDrop('extractDragArea', 'extractImage');
+      setupDragAndDrop('coverDragArea', 'coverImageInput');
+      setupDragAndDrop('secretImageDragArea', 'secretImageInput');
+      setupDragAndDrop('extractImageDragArea', 'extractImageInput');
+      setupDragAndDrop('originalDragArea', 'originalImageCompare');
+      setupDragAndDrop('stegoDragArea', 'stegoImageCompare');
+      setupDragAndDrop('capacityDragArea', 'capacityImage');
+    });
+
+    // Reset states on load
+    window.addEventListener('load', function() {
+      const buttonResets = [
+        { id: 'hideBtn', text: '🚀 Hide Message' },
+        { id: 'extractBtn', text: '🔍 Extract Message' },
+        { id: 'hideImageBtn', text: '🖼️ Hide Image' },
+        { id: 'extractImageBtn', text: '🔓 Extract Hidden Image' },
+        { id: 'xorCompareBtn', text: '⚔️ Compare Images' }
+      ];
+
+      const progressIndicators = ['hideProgress', 'extractProgress', 'hideImageProgress', 'extractImageProgress', 'xorCompareProgress'];
+
+      buttonResets.forEach(({ id, text }) => {
+        const btn = document.getElementById(id);
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = text;
+        }
+      });
+
+      progressIndicators.forEach(progId => {
+        const prog = document.getElementById(progId);
+        if (prog) prog.style.display = 'none';
+      });
+
+      showNotification('🔐 Advanced Steganography Suite loaded successfully!', 'success');
+    });
+
+    // Smooth scrolling for better UX
+    document.addEventListener('click', function(e) {
+      if (e.target.matches('a[href^="#"]')) {
+        e.preventDefault();
+        const target = document.querySelector(e.target.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,994 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel-cryp - Hide Digital Data in Images</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: 
+                linear-gradient(rgba(10, 10, 10, 0.7), rgba(26, 26, 46, 0.8)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(0,255,135,0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/><circle cx="400" cy="300" r="150" fill="rgba(0,123,255,0.1)"/><circle cx="1200" cy="600" r="200" fill="rgba(0,255,135,0.05)"/><circle cx="800" cy="800" r="100" fill="rgba(255,0,150,0.08)"/></svg>'),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+            background-size: cover, 1920px 1080px, cover;
+            background-attachment: fixed, fixed, fixed;
+            color: #e8f4fd;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Theme toggle modes */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            gap: 10px;
+        }
+
+        .theme-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(0, 255, 135, 0.2);
+            color: #00ff87;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .theme-btn:hover, .theme-btn.active {
+            background: rgba(0, 255, 135, 0.4);
+            transform: scale(1.05);
+        }
+
+        /* Dark theme */
+        body.dark-theme {
+            background: 
+                linear-gradient(rgba(5, 5, 5, 0.9), rgba(15, 15, 25, 0.9)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><pattern id="darkgrid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M 80 0 L 0 0 0 80" fill="none" stroke="rgba(0,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23darkgrid)"/></svg>'),
+                linear-gradient(135deg, #000000 0%, #0a0a1a 25%, #0f1419 50%, #1a1a2e 75%, #2d1b69 100%);
+        }
+
+        /* Cyberpunk theme */
+        body.cyberpunk-theme {
+            background: 
+                linear-gradient(rgba(20, 0, 40, 0.8), rgba(40, 0, 80, 0.9)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><defs><pattern id="cyber" width="120" height="120" patternUnits="userSpaceOnUse"><path d="M 120 0 L 0 0 0 120" fill="none" stroke="rgba(255,0,255,0.1)" stroke-width="2"/></pattern></defs><rect width="100%" height="100%" fill="url(%23cyber)"/><rect x="200" y="100" width="400" height="200" fill="rgba(255,0,255,0.05)" rx="10"/><rect x="800" y="400" width="300" height="150" fill="rgba(0,255,255,0.05)" rx="5"/></svg>'),
+                linear-gradient(135deg, #2d1b69 0%, #1a0033 25%, #330066 50%, #4d0080 75%, #6600cc 100%);
+        }
+
+        /* Language selector */
+        .language-selector {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .language-select {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(0, 123, 255, 0.2);
+            color: #007bff;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Messages panel */
+        .messages-panel {
+            position: fixed;
+            right: -300px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            height: 400px;
+            background: rgba(25, 35, 60, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 15px 0 0 15px;
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            overflow: hidden;
+        }
+
+        .messages-panel.open {
+            right: 0;
+        }
+
+        .messages-toggle {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 80px;
+            background: rgba(0, 255, 135, 0.8);
+            border: none;
+            border-radius: 15px 0 0 15px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .messages-content {
+            padding: 20px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00ff87;
+            font-size: 0.9rem;
+        }
+
+        /* Keyboard shortcuts help */
+        .shortcuts-help {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(25, 35, 60, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 135, 0.3);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .shortcuts-help.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+        }
+
+        .key-combo {
+            background: rgba(0, 255, 135, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* Clear button */
+        .clear-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clear-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 25, 45, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 1rem 2rem;
+            z-index: 999;
+            border-bottom: 1px solid rgba(0, 255, 135, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ff87, #007bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #e8f4fd;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(0, 255, 135, 0.1);
+            color: #00ff87;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 135, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 123, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 1;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ff87, #007bff, #ff0096, #00c8ff);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            color: #b3d9ff;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00ff87, #007bff);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 255, 135, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 255, 135, 0.4);
+        }
+
+        /* Sections */
+        .section {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #00ff87;
+        }
+
+        /* About Steganography */
+        .stego-info {
+            background: rgba(25, 35, 60, 0.3);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 135, 0.1);
+        }
+
+        .stego-info h3 {
+            color: #58a6ff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stego-info p {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Techniques Grid */
+        .techniques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .technique-card {
+            background: rgba(25, 35, 60, 0.4);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 135, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .technique-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 135, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 255, 135, 0.2);
+        }
+
+        .technique-card h3 {
+            color: #00c8ff;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .technique-card .icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .team-member {
+            background: rgba(25, 35, 60, 0.4);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 255, 135, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 135, 0.4);
+        }
+
+        .team-member h3 {
+            color: #00ff87;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .linkedin-btn {
+            display: inline-block;
+            background: #0077b5;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .linkedin-btn:hover {
+            background: #005582;
+            transform: translateY(-2px);
+        }
+
+        /* Rules Section */
+        .rules {
+            background: rgba(25, 35, 60, 0.3);
+            padding: 3rem;
+            border-radius: 20px;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .rules h3 {
+            color: #ffc107;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        .rules ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .rules li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 193, 7, 0.1);
+            font-size: 1.1rem;
+        }
+
+        .rules li:before {
+            content: "⚠️ ";
+            margin-right: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(10, 25, 45, 0.9);
+            padding: 2rem;
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 135, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .section {
+                padding: 3rem 1rem;
+            }
+
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                flex-direction: column;
+            }
+
+            .language-selector {
+                top: 60px;
+                right: 10px;
+            }
+
+            .messages-panel {
+                width: 250px;
+                right: -250px;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(0, 255, 135, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            z-index: 1002;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button class="theme-btn active" onclick="setTheme('default')" data-translate="theme-default">🌟 Default</button>
+        <button class="theme-btn" onclick="setTheme('dark')" data-translate="theme-dark">🌙 Dark</button>
+        <button class="theme-btn" onclick="setTheme('cyberpunk')" data-translate="theme-cyber">💜 Cyber</button>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select class="language-select" onchange="changeLanguage(this.value)">
+            <option value="en">🇺🇸 English</option>
+            <option value="ar">AR العربية</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="de">🇩🇪 Deutsch</option>
+        </select>
+    </div>
+
+    <!-- Messages Panel -->
+    <div class="messages-panel" id="messagesPanel">
+        <button class="messages-toggle" onclick="toggleMessages()">💬</button>
+        <div class="messages-content">
+            <h4 style="color: #00ff87; margin-bottom: 15px;" data-translate="messages-title">System Messages</h4>
+            <div id="messagesList">
+                <div class="message-item">
+                    <strong data-translate="welcome-msg">Welcome!</strong><br>
+                    <span data-translate="welcome-desc">Use keyboard shortcuts for quick navigation</span>
+                </div>
+                <div class="message-item">
+                    <strong data-translate="tip-msg">Pro Tip:</strong><br>
+                    <span data-translate="tip-desc">Try different themes for better experience</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div class="shortcuts-help" id="shortcutsHelp">
+        <h5 style="color: #00ff87; margin-bottom: 10px;" data-translate="shortcuts-title">Keyboard Shortcuts</h5>
+        <div class="shortcut-item">
+            <span data-translate="home-nav">Home</span>
+            <span class="key-combo">Ctrl + H</span>
+        </div>
+        <div class="shortcut-item">
+            <span data-translate="tools-nav">Tools</span>
+            <span class="key-combo">Ctrl + T</span>
+        </div>
+        <div class="shortcut-item">
+            <span data-translate="clear-nav">Clear Page</span>
+            <span class="key-combo">Ctrl + R</span>
+        </div>
+        <div class="shortcut-item">
+            <span data-translate="help-nav">Toggle Help</span>
+            <span class="key-combo">F1</span>
+        </div>
+        <div class="shortcut-item">
+            <span data-translate="messages-nav">Messages</span>
+            <span class="key-combo">Ctrl + M</span>
+        </div>
+    </div>
+
+    <!-- Clear Button -->
+    <button class="clear-button" onclick="clearPage()" data-translate="clear-btn">
+        🗑️ <span data-translate="clear-text">Clear</span>
+    </button>
+
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="logo" data-translate="logo">🔐 Pixel-cryp</div>
+            <ul class="nav-links">
+                <li><a href="#home" data-translate="nav-home">Home</a></li>
+                <li><a href="#about" data-translate="nav-about">About</a></li>
+                <li><a href="#techniques" data-translate="nav-techniques">Techniques</a></li>
+                <li><a href="#team" data-translate="nav-team">Team</a></li>
+                <li><a href="#rules" data-translate="nav-rules">Rules and regulations</a></li>
+                <li><a href="/tools" class="cta-button" style="padding: 0.5rem 1rem;" data-translate="nav-tools">🚀 Try Tools</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 data-translate="hero-title">🔐 Pixel-cryp(Hiding Digital Midea into images)</h1>
+            <p data-translate="hero-desc">Hide secret messages and images within ordinary images using cutting-edge cryptographic techniques. Explore the invisible world of digital steganography.</p>
+            <a href="/tools" class="cta-button" data-translate="hero-cta">🚀 Start Hiding Messages</a>
+        </div>
+    </section>
+
+    <!-- About Steganography -->
+    <section id="about" class="section">
+        <h2 data-translate="about-title">🔍 What is Steganography?</h2>
+        <div class="stego-info">
+            <h3 data-translate="about-subtitle">📚 The Art of Hidden Communication</h3>
+            <p data-translate="about-p1">
+                Steganography is the practice of concealing messages or information within other non-secret text or data. 
+                Unlike cryptography, which encrypts data to make it unreadable, steganography hides the very existence 
+                of the communication itself.
+            </p>
+            <p data-translate="about-p2">
+                The word steganography comes from the Greek words "steganos" (meaning hidden or covered) and "graphia" 
+                (meaning writing). This ancient art has evolved into sophisticated digital techniques that can hide 
+                messages in images, audio files, videos, and even network protocols.
+            </p>
+            <h3 data-translate="why-title">🛡️ Why Use Steganography?</h3>
+            <p data-translate="why-desc">
+                Digital steganography serves multiple purposes: protecting sensitive information, watermarking digital 
+                content, covert communication, and security research. By hiding data in plain sight, it provides an 
+                additional layer of security beyond traditional encryption methods.
+            </p>
+        </div>
+    </section>
+
+    <!-- Techniques -->
+    <section id="techniques" class="section">
+        <h2 data-translate="techniques-title">🔬 Steganographic Techniques</h2>
+        <div class="techniques-grid">
+            <div class="technique-card">
+                <span class="icon">🔧</span>
+                <h3 data-translate="lsb-title">LSB (Least Significant Bit)</h3>
+                <p data-translate="lsb-desc">
+                    The most common technique that replaces the least significant bits of pixel values with message bits. 
+                    Simple, fast, and virtually undetectable to the human eye. Perfect for beginners and high-capacity hiding.
+                </p>
+            </div>
+            
+            <div class="technique-card">
+                <span class="icon">📊</span>
+                <h3 data-translate="dct-title">DCT (Discrete Cosine Transform)</h3>
+                <p data-translate="dct-desc">
+                    Advanced frequency domain technique that embeds data in the DCT coefficients of images. 
+                    Highly resistant to compression and image processing. Used in professional applications requiring robustness.
+                </p>
+            </div>
+            
+            <div class="technique-card">
+                <span class="icon">🌐</span>
+                <h3 data-translate="spread-title">Spread Spectrum</h3>
+                <p data-translate="spread-desc">
+                    Military-grade technique that spreads message bits across multiple image locations using cryptographic keys. 
+                    Provides maximum security and resistance to detection. Ideal for sensitive communications.
+                </p>
+            </div>
+            
+            <div class="technique-card">
+                <span class="icon">🎲</span>
+                <h3 data-translate="random-title">Random LSB</h3>
+                <p data-translate="random-desc">
+                    Enhanced LSB technique that uses cryptographic keys to randomize hiding locations. 
+                    Combines the simplicity of LSB with the security of randomization. Perfect balance of speed and security.
+                </p>
+            </div>
+            
+            <div class="technique-card">
+                <span class="icon">🖼️</span>
+                <h3 data-translate="image-title">Image-in-Image Hiding</h3>
+                <p data-translate="image-desc">
+                    Revolutionary technique that hides entire images within other images using advanced bit manipulation. 
+                    Supports both sequential and randomized hiding patterns for maximum flexibility.
+                </p>
+            </div>
+            
+            <div class="technique-card">
+                <span class="icon">⚔️</span>
+                <h3 data-translate="xor-title">XOR Analysis</h3>
+                <p data-translate="xor-desc">
+                    Forensic technique that reveals exactly where and how data was hidden by comparing original and 
+                    steganographic images. Essential for security analysis and technique verification.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team -->
+    <section id="team" class="section">
+        <h2 data-translate="team-title">👥 Our Team</h2>
+        <div class="team-grid">
+            <div class="team-member">
+                <h3>Rahaf Alaraj</h3>
+                <p data-translate="rahaf-role">🎓 Network and Information Security Engineer </p>
+                <p data-translate="rahaf-desc">Passionate about cybersecurity,data pivacy and digital innovation.</p>
+                
+                </a>
+            </div>
+            
+            <div class="team-member">
+                <h3>Retan Aljamain</h3>
+                <p data-translate="retan-role">🎓 Network and Information Security Engineer </p>
+                <p data-translate="retan-desc"> Involved in outlining networks and security metrics .</p>
+                
+                </a>
+            </div>
+            
+            <div class="team-member">
+                <h3>Mosab Dabbour</h3>
+                <p data-translate="mosab-role">🎓 Network and Information Security Engineer </p>
+                <p data-translate="mosab-desc">. Provided feedback during documentation and contributed to initial topic exploration.</p>
+                
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rules and Regulations -->
+    <section id="rules" class="section">
+        <div class="rules">
+            <h3 data-translate="rules and regulations -title">⚖️ Terms of Use & Regulations</h3>
+            <ul>
+                <li><strong data-translate="rule1-title">Educational Purpose:</strong> <span data-translate="rule1-desc">This tool is designed for educational and research purposes only.</span></li>
+                <li><strong data-translate="rule2-title">Legal Compliance:</strong> <span data-translate="rule2-desc">Users must comply with all applicable local and international laws.</span></li>
+                <li><strong data-translate="rule3-title">No Malicious Use:</strong> <span data-translate="rule3-desc">Prohibited for illegal activities, harassment, or unauthorized surveillance.</span></li>
+                <li><strong data-translate="rule4-title">Content Responsibility:</strong> <span data-translate="rule4-desc">Users are responsible for all content they process through our system.</span></li>
+                <li><strong data-translate="rule5-title">Privacy Protection:</strong> <span data-translate="rule5-desc">Do not upload sensitive personal information or copyrighted material.</span></li>
+                <li><strong data-translate="rule6-title">File Size Limits:</strong> <span data-translate="rule6-desc">Maximum file size is 16MB to ensure optimal performance.</span></li>
+                <li><strong data-translate="rule7-title">No Warranty:</strong> <span data-translate="rule7-desc">This software is provided "as is" without warranties of any kind.</span></li>
+                <li><strong data-translate="rule8-title">Data Retention:</strong> <span data-translate="rule8-desc">Uploaded files are temporarily stored and automatically deleted.</span></li>
+                <li><strong data-translate="rule9-title">Ethical Use:</strong> <span data-translate="rule9-desc">Use this technology responsibly and respect others' privacy and rights.</span></li>
+                <li><strong data-translate="rule10-title">Academic Integrity:</strong> <span data-translate="rule10-desc">Cite this project appropriately in any academic or research work.</span></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p data-translate="footer1">&copy; 2025 Advanced Steganography Suite | Graduation Project</p>
+        <p>Rahaf Alaraj • Retan Aljamain • Mosab Dabbour</p>
+        <p data-translate="footer2">🔐 Securing Communication Through Innovation</p>
+    </footer>
+
+    <script>
+        // Translation data
+        const translations = {
+            en: {
+                'theme-default': '🌟 Default',
+                'theme-dark': '🌙 Dark',
+                'theme-cyber': '💜 Cyber',
+                'logo': '🔐 StegoSuite',
+                'nav-home': 'Home',
+                'nav-about': 'About',
+                'nav-techniques': 'Techniques',
+                'nav-team': 'Team',
+                'nav-rules': 'Rules',
+                'nav-tools': '🚀 Try Tools',
+                'hero-title': '🔐 Advanced Steganography Suite',
+                'hero-desc': 'Hide secret messages and images within ordinary images using cutting-edge cryptographic techniques. Explore the invisible world of digital steganography.',
+                'hero-cta': '🚀 Start Hiding Messages',
+                'messages-title': 'System Messages',
+                'welcome-msg': 'Welcome!',
+                'welcome-desc': 'Use keyboard shortcuts for quick navigation',
+                'tip-msg': 'Pro Tip:',
+                'tip-desc': 'Try different themes for better experience',
+                'shortcuts-title': 'Keyboard Shortcuts',
+                'home-nav': 'Home',
+                'tools-nav': 'Tools',
+                'clear-nav': 'Clear Page',
+                'help-nav': 'Toggle Help',
+                'messages-nav': 'Messages',
+                'clear-btn': '🗑️',
+                'clear-text': 'Clear'
+            },
+            ar: {
+                'theme-default': '🌟 افتراضي',
+                'theme-dark': '🌙 داكن',
+                'theme-cyber': '💜 سايبر',
+                'logo': '🔐 مجموعة الإخفاء',
+                'nav-home': 'الرئيسية',
+                'nav-about': 'حول',
+                'nav-techniques': 'التقنيات',
+                'nav-team': 'الفريق',
+                'nav-rules': 'القوانين',
+                'nav-tools': '🚀 جرب الأدوات',
+                'hero-title': '🔐 مجموعة الإخفاء المتقدمة',
+                'hero-desc': 'أخفِ الرسائل السرية والصور داخل الصور العادية باستخدام تقنيات التشفير المتطورة. استكشف العالم غير المرئي للإخفاء الرقمي.',
+                'hero-cta': '🚀 ابدأ إخفاء الرسائل',
+                'messages-title': 'رسائل النظام',
+                'welcome-msg': 'مرحباً!',
+                'welcome-desc': 'استخدم اختصارات لوحة المفاتيح للتنقل السريع',
+                'tip-msg': 'نصيحة:',
+                'tip-desc': 'جرب الثيمات المختلفة لتجربة أفضل',
+                'shortcuts-title': 'اختصارات لوحة المفاتيح',
+                'home-nav': 'الرئيسية',
+                'tools-nav': 'الأدوات',
+                'clear-nav': 'مسح الصفحة',
+                'help-nav': 'تبديل المساعدة',
+                'messages-nav': 'الرسائل',
+                'clear-btn': '🗑️',
+                'clear-text': 'مسح'
+            }
+        };
+
+        let currentLanguage = 'en';
+        let messagesOpen = false;
+
+        // Theme management
+        function setTheme(theme) {
+            document.body.className = theme === 'default' ? '' : `${theme}-theme`;
+            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            showNotification(`Theme changed to ${theme}`, 'success');
+            addMessage(`Theme changed to ${theme}`, 'system');
+        }
+
+        // Language management
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate');
+                if (translations[lang] && translations[lang][key]) {
+                    if (el.tagName === 'INPUT' && el.type === 'submit') {
+                        el.value = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+            
+            // Update document direction for Arabic
+            document.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            showNotification(`Language changed to ${lang}`, 'success');
+            addMessage(`Language changed to ${lang}`, 'system');
+        }
+
+        // Messages panel
+        function toggleMessages() {
+            messagesOpen = !messagesOpen;
+            document.getElementById('messagesPanel').classList.toggle('open', messagesOpen);
+        }
+
+        function addMessage(text, type = 'info') {
+            const messagesList = document.getElementById('messagesList');
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            messageItem.innerHTML = `
+                <strong>${type.toUpperCase()}:</strong><br>
+                <span>${text}</span>
+                <small style="opacity: 0.7; display: block; margin-top: 5px;">${new Date().toLocaleTimeString()}</small>
+            `;
+            messagesList.insertBefore(messageItem, messagesList.firstChild);
+            
+            // Keep only last 10 messages
+            while (messagesList.children.length > 10) {
+                messagesList.removeChild(messagesList.lastChild);
+            }
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Clear page function
+        function clearPage() {
+            if (confirm('Are you sure you want to clear the page? This will reset all content.')) {
+                // Smooth fade out
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case 'h':
+                        e.preventDefault();
+                        document.querySelector('#home').scrollIntoView({ behavior: 'smooth' });
+                        addMessage('Navigated to Home', 'navigation');
+                        break;
+                    case 't':
+                        e.preventDefault();
+                        window.location.href = '/tools';
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        clearPage();
+                        break;
+                    case 'm':
+                        e.preventDefault();
+                        toggleMessages();
+                        break;
+                }
+            } else if (e.key === 'F1') {
+                e.preventDefault();
+                const help = document.getElementById('shortcutsHelp');
+                help.classList.toggle('show');
+            }
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    addMessage(`Navigated to ${this.textContent}`, 'navigation');
+                }
+            });
+        });
+
+        // Add navbar background on scroll
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.style.background = 'rgba(10, 25, 45, 0.98)';
+            } else {
+                nav.style.background = 'rgba(10, 25, 45, 0.95)';
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            addMessage('Welcome to Advanced Steganography Suite!', 'welcome');
+            addMessage('Press F1 to see keyboard shortcuts', 'tip');
+            
+            // Auto-show shortcuts help briefly
+            setTimeout(() => {
+                document.getElementById('shortcutsHelp').classList.add('show');
+                setTimeout(() => {
+                    document.getElementById('shortcutsHelp').classList.remove('show');
+                }, 5000);
+            }, 2000);
+        });
+
+        // Add some interactive effects
+        document.querySelectorAll('.technique-card, .team-member').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
